@@ -1,0 +1,273 @@
+require('dotenv').config()
+const mongoose = require('mongoose')
+const Book = require('./models/Book')
+
+const books = [
+  {
+    title: 'The Great Gatsby',
+    author: 'F. Scott Fitzgerald',
+    description: 'A classic American novel about wealth, love, and the American Dream set in the Jazz Age.',
+    category: 'Fiction',
+    rating: 4.8,
+    reviews: 1250,
+    pages: 180,
+    publishedYear: 1925,
+    pricePerDay: 7.99,
+    subscription: 'basic',
+  },
+  {
+    title: 'To Kill a Mockingbird',
+    author: 'Harper Lee',
+    description: 'A gripping tale of racial injustice and childhood innocence in the American South.',
+    category: 'Fiction',
+    rating: 4.9,
+    reviews: 2100,
+    pages: 281,
+    publishedYear: 1960,
+    pricePerDay: 8.99,
+    subscription: 'basic',
+  },
+  {
+    title: 'Atomic Habits',
+    author: 'James Clear',
+    description: 'Transform your life through small, consistent habits that compound over time for extraordinary results.',
+    category: 'Self-Help',
+    rating: 4.7,
+    reviews: 3500,
+    pages: 320,
+    publishedYear: 2018,
+    pricePerDay: 9.99,
+    subscription: 'premium',
+  },
+  {
+    title: 'Educated',
+    author: 'Tara Westover',
+    description: 'A memoir about a woman raised by survivalists who escapes to get an education and discover herself.',
+    category: 'Non-Fiction',
+    rating: 4.6,
+    reviews: 2800,
+    pages: 352,
+    publishedYear: 2018,
+    pricePerDay: 9.99,
+    subscription: 'premium',
+  },
+  {
+    title: 'The Lean Startup',
+    author: 'Eric Ries',
+    description: 'Methodology for building businesses faster and smarter by iterating on MVPs and learning from customers.',
+    category: 'Business',
+    rating: 4.5,
+    reviews: 1900,
+    pages: 299,
+    publishedYear: 2011,
+    pricePerDay: 10.99,
+    subscription: 'premium',
+  },
+  {
+    title: '1984',
+    author: 'George Orwell',
+    description: 'A dystopian novel depicting a totalitarian society and the struggle for freedom and individuality.',
+    category: 'Fiction',
+    rating: 4.7,
+    reviews: 2200,
+    pages: 328,
+    publishedYear: 1949,
+    pricePerDay: 8.99,
+    subscription: 'basic',
+  },
+  {
+    title: 'Sapiens',
+    author: 'Yuval Noah Harari',
+    description: 'An ambitious history of humankind from the Stone Age to the modern age, exploring what makes us unique.',
+    category: 'History',
+    rating: 4.6,
+    reviews: 2600,
+    pages: 443,
+    publishedYear: 2011,
+    pricePerDay: 11.99,
+    subscription: 'premium',
+  },
+  {
+    title: 'The Alchemist',
+    author: 'Paulo Coelho',
+    description: 'A philosophical novel about pursuing dreams and discovering your personal legend and destiny.',
+    category: 'Fiction',
+    rating: 4.5,
+    reviews: 1800,
+    pages: 227,
+    publishedYear: 1988,
+    pricePerDay: 7.99,
+    subscription: 'basic',
+  },
+  {
+    title: 'Thinking, Fast and Slow',
+    author: 'Daniel Kahneman',
+    description: 'Understanding how our mind works through the lens of cognitive psychology and behavioral economics.',
+    category: 'Non-Fiction',
+    rating: 4.4,
+    reviews: 1700,
+    pages: 499,
+    publishedYear: 2011,
+    pricePerDay: 10.99,
+    subscription: 'premium',
+  },
+  {
+    title: 'The Origin of Species',
+    author: 'Charles Darwin',
+    description: 'The foundational work explaining evolution and natural selection - a cornerstone of modern science.',
+    category: 'Science',
+    rating: 4.3,
+    reviews: 950,
+    pages: 490,
+    publishedYear: 1859,
+    pricePerDay: 7.99,
+    subscription: 'free',
+  },
+  {
+    title: 'Good to Great',
+    author: 'Jim Collins',
+    description: 'How companies transition from good performance to sustained greatness through key disciplines.',
+    category: 'Business',
+    rating: 4.5,
+    reviews: 1600,
+    pages: 300,
+    publishedYear: 2001,
+    pricePerDay: 10.99,
+    subscription: 'premium',
+  },
+  {
+    title: 'The Hobbit',
+    author: 'J.R.R. Tolkien',
+    description: 'An epic fantasy adventure following Bilbo Baggins on his unexpected journey with dwarves and a wizard.',
+    category: 'Fiction',
+    rating: 4.8,
+    reviews: 2400,
+    pages: 310,
+    publishedYear: 1937,
+    pricePerDay: 8.99,
+    subscription: 'basic',
+  },
+  {
+    title: 'Zero to One',
+    author: 'Peter Thiel',
+    description: 'Notes on startups about building the future through innovation and creating monopolies.',
+    category: 'Business',
+    rating: 4.4,
+    reviews: 1200,
+    pages: 195,
+    publishedYear: 2014,
+    pricePerDay: 9.99,
+    subscription: 'premium',
+  },
+  {
+    title: 'The Road',
+    author: 'Cormac McCarthy',
+    description: 'A post-apocalyptic journey of a father and son surviving in a desolate world searching for hope.',
+    category: 'Fiction',
+    rating: 4.2,
+    reviews: 1100,
+    pages: 287,
+    publishedYear: 2006,
+    pricePerDay: 9.99,
+    subscription: 'basic',
+  },
+  {
+    title: 'A Brief History of Time',
+    author: 'Stephen Hawking',
+    description: 'Explaining the universe from the Big Bang to black holes in understandable terms.',
+    category: 'Science',
+    rating: 4.3,
+    reviews: 1400,
+    pages: 256,
+    publishedYear: 1988,
+    pricePerDay: 9.99,
+    subscription: 'basic',
+  },
+  {
+    title: 'The Power of Now',
+    author: 'Eckhart Tolle',
+    description: 'Spiritual guidance on transcending the ego and living fully in the present moment.',
+    category: 'Self-Help',
+    rating: 4.5,
+    reviews: 1700,
+    pages: 236,
+    publishedYear: 1997,
+    pricePerDay: 9.99,
+    subscription: 'premium',
+  },
+  {
+    title: 'Dune',
+    author: 'Frank Herbert',
+    description: 'An epic science fiction saga set on the desert planet of Arrakis with complex politics and ecology.',
+    category: 'Fiction',
+    rating: 4.6,
+    reviews: 1900,
+    pages: 688,
+    publishedYear: 1965,
+    pricePerDay: 8.99,
+    subscription: 'basic',
+  },
+  {
+    title: 'The Intelligent Investor',
+    author: 'Benjamin Graham',
+    description: 'Principles for value investing and building wealth through smart financial decisions.',
+    category: 'Business',
+    rating: 4.5,
+    reviews: 1300,
+    pages: 640,
+    publishedYear: 1949,
+    pricePerDay: 11.99,
+    subscription: 'premium',
+  },
+  {
+    title: 'Foundation',
+    author: 'Isaac Asimov',
+    description: 'A science fiction masterpiece about establishing a foundation to preserve civilization.',
+    category: 'Fiction',
+    rating: 4.5,
+    reviews: 1500,
+    pages: 255,
+    publishedYear: 1951,
+    pricePerDay: 8.99,
+    subscription: 'basic',
+  },
+  {
+    title: 'Man\'s Search for Meaning',
+    author: 'Viktor Frankl',
+    description: 'A Holocaust survivor\'s profound exploration of finding meaning even in the most difficult circumstances.',
+    category: 'Self-Help',
+    rating: 4.7,
+    reviews: 2000,
+    pages: 165,
+    publishedYear: 1946,
+    pricePerDay: 7.99,
+    subscription: 'basic',
+  },
+]
+
+async function seedBooks() {
+  try {
+    await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/learntales')
+    console.log('[INFO] Connected to MongoDB')
+
+    // Clear existing books
+    await Book.deleteMany({})
+    console.log('🧹 Cleared existing books')
+
+    // Insert new books
+    const insertedBooks = await Book.insertMany(books)
+    console.log(`[SUCCESS] Successfully seeded ${insertedBooks.length} books!`)
+
+    console.log('\n📕 Books added:')
+    insertedBooks.forEach((book) => {
+      console.log(`  • "${book.title}" by ${book.author} - $${book.pricePerDay}/day`)
+    })
+
+    process.exit(0)
+  } catch (err) {
+    console.error('❌ Error seeding books:', err)
+    process.exit(1)
+  }
+}
+
+seedBooks()

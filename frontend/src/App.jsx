@@ -1,0 +1,138 @@
+import { Routes, Route, Link } from 'react-router-dom'
+import { BookOpen, LogOut } from 'lucide-react'
+import HomePage from './pages/HomePage'
+import ProgramsPage from './pages/ProgramsPage'
+import ProgramDetailPage from './pages/ProgramDetailPage'
+import DashboardNew from './pages/DashboardNew'
+import AboutPage from './pages/AboutPage'
+import PricingPage from './pages/PricingPage'
+import InstructorsPage from './pages/InstructorsPage'
+import SessionPage from './pages/SessionPage'
+import ContactPage from './pages/ContactPage'
+import AdminDashboard from './pages/AdminDashboard'
+import AdminAnalytics from './pages/AdminAnalytics'
+import ProtectedRoute from './components/ProtectedRoute'
+import { useAuth } from './context/AuthContext'
+import './App.css'
+
+function App() {
+  const { user, logout, login } = useAuth()
+
+  const handleLogout = () => {
+    logout()
+  }
+
+  const handleLogin = () => {
+    login()
+  }
+
+  return (
+    <div className="min-h-screen bg-warm-cream">
+      {/* Navigation Bar */}
+      <nav className="fixed w-full top-0 z-50 bg-warm-cream/95 border-b border-slate-gray/10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <Link to="/" className="flex items-center gap-3">
+              <BookOpen size={28} className="text-slate-gray" strokeWidth={1.5} />
+              <span className="text-2xl font-bold text-soft-black">TaleHub</span>
+            </Link>
+
+            <ul className="hidden md:flex items-center gap-8">
+              <li>
+                <Link to="/" className="text-soft-black hover:text-slate-gray font-medium transition">
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link to="/about" className="text-soft-black hover:text-slate-gray font-medium transition">
+                  About
+                </Link>
+              </li>
+              <li>
+                <Link to="/programs" className="text-soft-black hover:text-slate-gray font-medium transition">
+                  Programs
+                </Link>
+              </li>
+              <li>
+                <Link to="/instructors" className="text-soft-black hover:text-slate-gray font-medium transition">
+                  Instructors
+                </Link>
+              </li>
+              <li>
+                <Link to="/pricing" className="text-soft-black hover:text-slate-gray font-medium transition">
+                  Pricing
+                </Link>
+              </li>
+              {user && (
+                <>
+                  <li>
+                    <Link to="/dashboard" className="text-soft-black hover:text-slate-gray font-medium transition">
+                      Dashboard
+                    </Link>
+                  </li>
+                  <li>
+                    <button
+                      onClick={handleLogout}
+                      className="text-soft-black hover:text-slate-gray font-medium transition flex items-center gap-2"
+                    >
+                      <LogOut size={18} /> Logout
+                    </button>
+                  </li>
+                </>
+              )}
+              {!user && (
+                <li>
+                  <button
+                    onClick={handleLogin}
+                    className="bg-slate-gray hover:bg-soft-black text-warm-cream px-6 py-2 rounded-lg transition font-medium"
+                  >
+                    Login
+                  </button>
+                </li>
+              )}
+            </ul>
+
+            {/* Mobile Menu */}
+            <div className="md:hidden flex items-center gap-4">
+              {user && (
+                <button onClick={handleLogout} className="text-slate-gray hover:text-soft-black">
+                  <LogOut size={20} />
+                </button>
+              )}
+              {!user && (
+                <button 
+                  onClick={handleLogin}
+                  className="bg-slate-gray text-warm-cream px-4 py-2 rounded-lg text-sm font-medium"
+                >
+                  Login
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      {/* Routes */}
+      <main>
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<HomePage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/programs" element={<ProgramsPage />} />
+          <Route path="/programs/:id" element={<ProgramDetailPage />} />
+          <Route path="/pricing" element={<PricingPage />} />
+          <Route path="/instructors" element={<InstructorsPage />} />
+          <Route path="/session/:sessionId" element={<SessionPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+
+          {/* Protected Routes */}
+          <Route path="/dashboard" element={<ProtectedRoute><DashboardNew /></ProtectedRoute>} />
+          <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+          <Route path="/admin/analytics" element={<ProtectedRoute><AdminAnalytics /></ProtectedRoute>} />
+        </Routes>
+      </main>
+    </div>
+  )
+}
+
+export default App
