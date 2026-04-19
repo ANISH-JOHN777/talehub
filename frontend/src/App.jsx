@@ -3,6 +3,8 @@ import { BookOpen, LogOut } from 'lucide-react'
 import HomePage from './pages/HomePage'
 import ProgramsPage from './pages/ProgramsPage'
 import ProgramDetailPage from './pages/ProgramDetailPage'
+import EnrollmentCustomizationPage from './pages/EnrollmentCustomizationPage'
+import PaymentPage from './pages/PaymentPage'
 import DashboardNew from './pages/DashboardNew'
 import AboutPage from './pages/AboutPage'
 import PricingPage from './pages/PricingPage'
@@ -12,6 +14,8 @@ import ContactPage from './pages/ContactPage'
 import AdminDashboard from './pages/AdminDashboard'
 import AdminAnalytics from './pages/AdminAnalytics'
 import ProtectedRoute from './components/ProtectedRoute'
+import ScrollToTop from './components/ScrollToTop'
+import PageScrollReset from './components/PageScrollReset'
 import { useAuth } from './context/AuthContext'
 import './App.css'
 
@@ -86,7 +90,7 @@ function App() {
                     onClick={handleLogin}
                     className="bg-slate-gray hover:bg-soft-black text-warm-cream px-6 py-2 rounded-lg transition font-medium"
                   >
-                    Login
+                    Sign In
                   </button>
                 </li>
               )}
@@ -114,6 +118,7 @@ function App() {
 
       {/* Routes */}
       <main>
+        <PageScrollReset />
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<HomePage />} />
@@ -125,12 +130,19 @@ function App() {
           <Route path="/session/:sessionId" element={<SessionPage />} />
           <Route path="/contact" element={<ContactPage />} />
 
+          {/* Enrollment Flow Routes */}
+          <Route path="/enroll/:id" element={<ProtectedRoute><EnrollmentCustomizationPage /></ProtectedRoute>} />
+          <Route path="/payment" element={<ProtectedRoute><PaymentPage /></ProtectedRoute>} />
+
           {/* Protected Routes */}
           <Route path="/dashboard" element={<ProtectedRoute><DashboardNew /></ProtectedRoute>} />
           <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
           <Route path="/admin/analytics" element={<ProtectedRoute><AdminAnalytics /></ProtectedRoute>} />
         </Routes>
       </main>
+
+      {/* Scroll to Top Button - Appears on all pages */}
+      <ScrollToTop />
     </div>
   )
 }

@@ -34,28 +34,12 @@ export default function ProgramDetailPage() {
 
   const handleEnroll = async () => {
     if (!user) {
-      navigate('/auth')
+      navigate('/login')
       return
     }
 
-    setEnrolling(true)
-    try {
-      const token = localStorage.getItem('authToken')
-      await axios.post(
-        `${API_URL}/enrollments`,
-        { programId: id, tier: selectedTier },
-        { headers: { Authorization: `Bearer ${token}` } }
-      )
-      setEnrolled(true)
-      setTimeout(() => {
-        navigate('/dashboard')
-      }, 2000)
-    } catch (error) {
-      console.error('Error enrolling:', error)
-      alert('Error enrolling in program')
-    } finally {
-      setEnrolling(false)
-    }
+    // Navigate to enrollment customization page instead of direct enrollment
+    navigate(`/enroll/${id}`)
   }
 
   if (loading) {
@@ -127,25 +111,25 @@ export default function ProgramDetailPage() {
               alt={program.title}
               className="w-full h-full object-cover"
               onError={(e) => {
-                e.target.src = 'https://via.placeholder.com/500x400?text=Program'
+                e.target.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22500%22 height=%22400%22%3E%3Crect fill=%22%23d4a574%22 width=%22500%22 height=%22400%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-size=%2224%22 fill=%22%23333%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22%3EProgram Cover%3C/text%3E%3C/svg%3E'
               }}
             />
           </motion.div>
 
           {/* Right: Info */}
           <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }}>
-            <div className="text-sm font-semibold text-slate-gray uppercase mb-2">{program.category}</div>
-            <h1 className="text-5xl font-bold text-soft-black mb-4">{program.title}</h1>
-            <p className="text-xl text-slate-gray mb-6">{program.description}</p>
+            <div className="text-sm font-semibold text-slate-gray uppercase mb-3 tracking-widest" style={{ letterSpacing: '0.8px' }}>{program.category}</div>
+            <h1 className="text-3xl font-bold text-soft-black mb-4 tracking-tight" style={{ letterSpacing: '-0.01em', lineHeight: '1.2' }}>{program.title}</h1>
+            <p className="text-base text-slate-gray mb-6" style={{ lineHeight: '1.7', letterSpacing: '0.3px' }}>{program.description}</p>
 
             {/* Instructor */}
             {program.instructor && (
               <div className="mb-6 pb-6 border-b border-slate-gray/20">
-                <p className="text-slate-gray mb-2">
+                <p className="text-slate-gray mb-2" style={{ letterSpacing: '0.2px' }}>
                   <span className="font-semibold">Instructor:</span> {program.instructor.name}
                 </p>
                 {program.instructor.expertise && (
-                  <p className="text-slate-gray text-sm">
+                  <p className="text-slate-gray text-sm" style={{ letterSpacing: '0.2px' }}>
                     <span className="font-semibold">Expertise:</span> {program.instructor.expertise.join(', ')}
                   </p>
                 )}
@@ -155,13 +139,13 @@ export default function ProgramDetailPage() {
             {/* Stats */}
             <div className="grid grid-cols-3 gap-4 mb-6">
               <div>
-                <div className="flex items-center gap-2 text-slate-gray mb-1">
+                <div className="flex items-center gap-2 text-slate-gray mb-1" style={{ letterSpacing: '0.2px' }}>
                   <Clock size={18} /> Duration
                 </div>
-                <p className="text-2xl font-bold text-soft-black">{program.duration.weeks} weeks</p>
+                <p className="text-2xl font-bold text-soft-black" style={{ letterSpacing: '-0.01em' }}>{program.duration.weeks} weeks</p>
               </div>
               <div>
-                <div className="flex items-center gap-2 text-slate-gray mb-1">
+                <div className="flex items-center gap-2 text-slate-gray mb-1" style={{ letterSpacing: '0.2px' }}>
                   <Users size={18} /> Enrolled
                 </div>
                 <p className="text-2xl font-bold text-soft-black">{program.totalEnrolled}+</p>
@@ -191,7 +175,7 @@ export default function ProgramDetailPage() {
           <div className="lg:col-span-2 space-y-12">
             {/* What You'll Learn */}
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-              <h2 className="text-3xl font-bold text-soft-black mb-6">What You'll Learn</h2>
+                <h2 className="text-2xl font-bold text-soft-black mb-6">What You'll Learn</h2>
               <div className="grid md:grid-cols-2 gap-4">
                 {program.outcomes && program.outcomes.length > 0 ? (
                   program.outcomes.map((outcome, i) => (
@@ -209,7 +193,7 @@ export default function ProgramDetailPage() {
             {/* Session Breakdown */}
             {program.sessions && program.sessions.length > 0 && (
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-                <h2 className="text-3xl font-bold text-soft-black mb-6">Session Schedule</h2>
+                <h2 className="text-2xl font-bold text-soft-black mb-6">Session Schedule</h2>
                 <div className="space-y-4">
                   {program.sessions.map((session, i) => (
                     <div key={i} className="bg-white p-6 rounded-xl border border-slate-gray/10 hover:shadow-md transition">
@@ -230,7 +214,7 @@ export default function ProgramDetailPage() {
             {/* About Section */}
             {program.longDescription && (
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-                <h2 className="text-3xl font-bold text-soft-black mb-4">About This Program</h2>
+                <h2 className="text-2xl font-bold text-soft-black mb-4">About This Program</h2>
                 <p className="text-lg text-slate-gray leading-relaxed">{program.longDescription}</p>
               </motion.div>
             )}
@@ -246,7 +230,7 @@ export default function ProgramDetailPage() {
             <div className="sticky top-28 space-y-6">
               {/* Tier Selection */}
               <div>
-                <h3 className="text-2xl font-bold text-soft-black mb-4">Choose Your Plan</h3>
+                <h3 className="text-lg font-bold text-soft-black mb-4">Choose Your Plan</h3>
                 <div className="space-y-3">
                   {tiers.map((tier) => (
                     <motion.button
@@ -261,7 +245,7 @@ export default function ProgramDetailPage() {
                     >
                       <div className="flex justify-between items-start mb-2">
                         <p className="font-bold text-soft-black">{tier.name}</p>
-                        <p className="text-2xl font-bold text-slate-gray">₹{tier.price}</p>
+                        <p className="text-lg font-bold text-slate-gray">₹{tier.price}</p>
                       </div>
                       <p className="text-sm text-slate-gray">{tier.description}</p>
                     </motion.button>

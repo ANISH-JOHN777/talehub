@@ -47,7 +47,7 @@ export default function LandingPage() {
                 onClick={handleGetStarted}
                 className="bg-slate-gray hover:bg-soft-black text-warm-cream px-6 py-2 rounded-lg transition font-medium"
               >
-                {user ? 'Dashboard' : 'Sign In'}
+                Sign In
               </button>
             </div>
           </div>

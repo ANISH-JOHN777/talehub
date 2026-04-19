@@ -67,8 +67,8 @@ export default function ProgramsPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <h1 className="text-5xl font-bold text-soft-black mb-4">Explore Programs</h1>
-          <p className="text-xl text-slate-gray">Choose from 100+ expertly crafted learning programs</p>
+          <h1 className="text-3xl font-bold text-soft-black mb-4 tracking-tight" style={{ letterSpacing: '-0.01em' }}>Explore Programs</h1>
+          <p className="text-base text-slate-gray" style={{ letterSpacing: '0.3px', wordSpacing: '0.08em' }}>Choose from 100+ expertly crafted learning programs</p>
         </motion.div>
 
         {/* Search Bar */}
@@ -185,7 +185,7 @@ export default function ProgramsPage() {
                         alt={program.title}
                         className="w-full h-full object-cover group-hover:scale-110 transition duration-300"
                         onError={(e) => {
-                          e.target.src = 'https://via.placeholder.com/400x300?text=Program'
+                          e.target.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22%3E%3Crect fill=%22%23d4a574%22 width=%22400%22 height=%22300%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-size=%2220%22 fill=%22%23333%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22%3EProgram Cover%3C/text%3E%3C/svg%3E'
                         }}
                       />
                       <div className="absolute top-3 right-3 bg-warm-cream px-3 py-1 rounded-full text-sm font-semibold text-soft-black">

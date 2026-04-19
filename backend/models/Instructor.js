@@ -31,7 +31,7 @@ const instructorSchema = new mongoose.Schema(
     ],
     avatar: {
       type: String,
-      default: 'https://via.placeholder.com/150?text=Instructor',
+      default: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80',
     },
     social: {
       twitter: String,

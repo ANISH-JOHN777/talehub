@@ -1,11 +1,8 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { BookOpen, Heart, Zap, Users, ArrowRight } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
 
 export default function AboutPage() {
-  const navigate = useNavigate()
-
   const values = [
     {
       icon: <BookOpen size={32} className="text-slate-gray" />,
@@ -31,24 +28,6 @@ export default function AboutPage() {
 
   return (
     <div className="min-h-screen bg-warm-cream">
-      {/* Navigation */}
-      <nav className="fixed w-full top-0 z-50 bg-warm-cream/95 border-b border-slate-gray/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div onClick={() => navigate('/')} className="flex items-center gap-3 cursor-pointer">
-              <BookOpen size={28} className="text-slate-gray" />
-              <span className="text-2xl font-bold text-soft-black">TaleHub</span>
-            </div>
-            <button
-              onClick={() => navigate('/')}
-              className="text-slate-gray hover:text-soft-black font-medium transition"
-            >
-              Back to Home
-            </button>
-          </div>
-        </div>
-      </nav>
-
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
         <motion.div

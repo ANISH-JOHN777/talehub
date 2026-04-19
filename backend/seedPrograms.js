@@ -102,8 +102,8 @@ const programData = [
     language: 'English',
     instructor: null, // Will be set after instructor creation
     duration: { weeks: 4, hours: 12 },
-    image: 'https://via.placeholder.com/400x300?text=Atomic+Habits',
-    thumbnail: 'https://via.placeholder.com/200x150?text=Atomic+Habits',
+    image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=500&h=400&fit=crop',
+    thumbnail: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=300&h=200&fit=crop',
     outcomes: [
       'Understand the neurochemistry of habit formation',
       'Build a personalized habit system',
@@ -149,8 +149,8 @@ const programData = [
     language: 'English',
     instructor: null,
     duration: { weeks: 6, hours: 18 },
-    image: 'https://via.placeholder.com/400x300?text=Rich+Dad+Poor+Dad',
-    thumbnail: 'https://via.placeholder.com/200x150?text=Rich+Dad+Poor+Dad',
+    image: 'https://images.unsplash.com/photo-1579621970563-fbf51534e722?w=500&h=400&fit=crop',
+    thumbnail: 'https://images.unsplash.com/photo-1579621970563-fbf51534e722?w=300&h=200&fit=crop',
     outcomes: [
       'Understand the rich mindset vs. poor mindset',
       'Learn asset vs. liability differentiation',
@@ -190,8 +190,8 @@ const programData = [
     language: 'English',
     instructor: null,
     duration: { weeks: 5, hours: 15 },
-    image: 'https://via.placeholder.com/400x300?text=Thinking+Fast+Slow',
-    thumbnail: 'https://via.placeholder.com/200x150?text=Thinking+Fast+Slow',
+    image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=500&h=400&fit=crop',
+    thumbnail: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=300&h=200&fit=crop',
     outcomes: [
       'Understand System 1 and System 2 thinking',
       'Identify and overcome your cognitive biases',
@@ -231,8 +231,8 @@ const programData = [
     language: 'English',
     instructor: null,
     duration: { weeks: 8, hours: 24 },
-    image: 'https://via.placeholder.com/400x300?text=Sapiens',
-    thumbnail: 'https://via.placeholder.com/200x150?text=Sapiens',
+    image: 'https://images.unsplash.com/photo-1507842725589-01a959e0a396?w=500&h=400&fit=crop',
+    thumbnail: 'https://images.unsplash.com/photo-1507842725589-01a959e0a396?w=300&h=200&fit=crop',
     outcomes: [
       'Understand the cognitive revolution in humans',
       'Trace the agricultural revolution\'s impact',
@@ -272,8 +272,8 @@ const programData = [
     language: 'English',
     instructor: null,
     duration: { weeks: 4, hours: 10 },
-    image: 'https://via.placeholder.com/400x300?text=Deep+Work',
-    thumbnail: 'https://via.placeholder.com/200x150?text=Deep+Work',
+    image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=500&h=400&fit=crop',
+    thumbnail: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=300&h=200&fit=crop',
     outcomes: [
       'Define and measure deep work',
       'Create a deep work culture',

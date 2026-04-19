@@ -58,11 +58,11 @@ const programSchema = new mongoose.Schema(
     ],
     image: {
       type: String,
-      default: 'https://via.placeholder.com/400x300?text=Program',
+      default: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=600&q=80',
     },
     thumbnail: {
       type: String,
-      default: 'https://via.placeholder.com/200x150?text=Program',
+      default: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=300&q=80',
     },
     outcomes: [
       {
