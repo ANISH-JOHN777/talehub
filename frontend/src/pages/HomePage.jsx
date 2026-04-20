@@ -337,7 +337,6 @@ export default function HomePage() {
             <ul className="space-y-2 text-xs text-warm-cream/70" style={{ letterSpacing: '0.2px' }}>
               <li><Link to="/programs" className="hover:text-warm-cream transition">Programs</Link></li>
               <li><Link to="/pricing" className="hover:text-warm-cream transition">Pricing</Link></li>
-              <li><Link to="/instructors" className="hover:text-warm-cream transition">Instructors</Link></li>
             </ul>
           </div>
           <div>

@@ -22,7 +22,9 @@ const instructorData = [
       website: 'https://jamesclear.com',
     },
     totalStudents: 0,
+    maxCapacity: 50,
     isActive: true,
+    isAvailable: true,
   },
   {
     name: 'Robert Kiyosaki',
@@ -39,7 +41,9 @@ const instructorData = [
       website: 'https://richdad.com',
     },
     totalStudents: 0,
+    maxCapacity: 50,
     isActive: true,
+    isAvailable: true,
   },
   {
     name: 'Daniel Kahneman',
@@ -55,7 +59,9 @@ const instructorData = [
       linkedin: 'https://linkedin.com/in/danielkahneman',
     },
     totalStudents: 0,
+    maxCapacity: 50,
     isActive: true,
+    isAvailable: true,
   },
   {
     name: 'Yuval Noah Harari',
@@ -71,7 +77,9 @@ const instructorData = [
       website: 'https://www.ynharari.com',
     },
     totalStudents: 0,
+    maxCapacity: 50,
     isActive: true,
+    isAvailable: true,
   },
   {
     name: 'Cal Newport',
@@ -87,7 +95,9 @@ const instructorData = [
       website: 'https://www.calnewport.com',
     },
     totalStudents: 0,
+    maxCapacity: 50,
     isActive: true,
+    isAvailable: true,
   },
 ]
 

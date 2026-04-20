@@ -105,6 +105,7 @@ export default function PaymentPage() {
       // Step 2: Create Enrollment
       const enrollmentPayload = {
         programId: enrollmentData.programId,
+        instructorId: enrollmentData.instructorId,
         sessionType: enrollmentData.sessionType,
         sessionCount: enrollmentData.sessionCount,
         customizedSessions: enrollmentData.customizedSessions,

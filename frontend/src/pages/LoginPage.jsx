@@ -2,48 +2,79 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
-import { BookOpen, Check, Sparkles, Book, MessageCircle } from 'lucide-react'
+import { BookOpen, Check, Sparkles, Book, MessageCircle, AlertCircle, Eye, EyeOff } from 'lucide-react'
+import useFormValidation from '../hooks/useFormValidation'
+import { validators } from '../utils/formValidation'
+import { showToast } from '../utils/toast'
 
 export default function LoginPage() {
   const navigate = useNavigate()
   const { login, register } = useAuth()
 
-  const [isLogin, setIsLogin] = useState(true) // Toggle between login and register
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    passwordConfirm: '',
-  })
+  const [isLogin, setIsLogin] = useState(true)
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
-  // Handle input change
-  const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData(prev => ({
-      ...prev,
-      [name]: value,
-    }))
-    setError('') // Clear error when user types
+  // Validation schema
+  const loginSchema = {
+    email: validators.email,
+    password: (value) => {
+      if (!value) return 'Password is required'
+      return null
+    },
   }
+
+  const registerSchema = {
+    name: (value) => validators.required(value, 'Full name'),
+    email: validators.email,
+    password: validators.password,
+    passwordConfirm: (value) => {
+      if (!value) return 'Please confirm your password'
+      return null
+    },
+  }
+
+  const {
+    formData,
+    errors,
+    touched,
+    handleChange,
+    handleBlur,
+    validateAll,
+    reset,
+    getFieldError,
+    isFieldTouched,
+  } = useFormValidation(
+    { name: '', email: '', password: '', passwordConfirm: '' },
+    isLogin ? loginSchema : registerSchema
+  )
 
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setError('')
-    setSuccess('')
+
+    // Validate all fields
+    if (!validateAll()) {
+      showToast.error('Please fix the errors in the form')
+      return
+    }
+
     setLoading(true)
 
     try {
       let result
-      
+
       if (isLogin) {
-        // Call login from AuthContext
         result = await login(formData.email, formData.password)
       } else {
-        // Call register from AuthContext
+        // Check if passwords match
+        if (formData.password !== formData.passwordConfirm) {
+          showToast.error('Passwords do not match')
+          setLoading(false)
+          return
+        }
+
         result = await register(
           formData.name,
           formData.email,
@@ -53,21 +84,24 @@ export default function LoginPage() {
       }
 
       if (result.success) {
-        setSuccess(`${isLogin ? 'Login' : 'Registration'} successful! Redirecting...`)
-
-        // Redirect after 500ms (context is already updated)
+        showToast.success(`${isLogin ? 'Login' : 'Registration'} successful! Redirecting...`)
         setTimeout(() => {
           navigate('/dashboard')
         }, 500)
       } else {
-        setError(result.error || 'An error occurred')
+        showToast.error(result.error || 'An error occurred')
       }
     } catch (err) {
-      setError(err.message || 'Failed to connect to server')
+      showToast.error(err.message || 'Failed to connect to server')
       console.error('Auth error:', err)
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleToggleMode = () => {
+    setIsLogin(!isLogin)
+    reset()
   }
 
   return (
@@ -99,15 +133,30 @@ export default function LoginPage() {
                 <label className="block text-sm font-medium text-slate-gray mb-2">
                   Full Name
                 </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder="John Doe"
-                  required={!isLogin}
-                  className="w-full px-4 py-2 border border-slate-gray/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-gray"
-                />
+                <div className="relative">
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    placeholder="John Doe"
+                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition ${
+                      isFieldTouched('name') && getFieldError('name')
+                        ? 'border-red-500 focus:ring-red-500'
+                        : 'border-slate-gray/30 focus:ring-slate-gray'
+                    }`}
+                  />
+                </div>
+                {isFieldTouched('name') && getFieldError('name') && (
+                  <motion.p
+                    className="text-red-500 text-sm mt-1 flex items-center gap-1"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                  >
+                    <AlertCircle size={14} /> {getFieldError('name')}
+                  </motion.p>
+                )}
               </div>
             )}
 
@@ -121,10 +170,23 @@ export default function LoginPage() {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
+                onBlur={handleBlur}
                 placeholder="your@email.com"
-                required
-                className="w-full px-4 py-2 border border-slate-gray/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-gray"
+                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition ${
+                  isFieldTouched('email') && getFieldError('email')
+                    ? 'border-red-500 focus:ring-red-500'
+                    : 'border-slate-gray/30 focus:ring-slate-gray'
+                }`}
               />
+              {isFieldTouched('email') && getFieldError('email') && (
+                <motion.p
+                  className="text-red-500 text-sm mt-1 flex items-center gap-1"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                >
+                  <AlertCircle size={14} /> {getFieldError('email')}
+                </motion.p>
+              )}
             </div>
 
             {/* Password Field */}
@@ -132,15 +194,37 @@ export default function LoginPage() {
               <label className="block text-sm font-medium text-slate-gray mb-2">
                 Password
               </label>
-              <input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="At least 6 characters"
-                required
-                className="w-full px-4 py-2 border border-slate-gray/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-gray"
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  placeholder="At least 6 characters"
+                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition pr-10 ${
+                    isFieldTouched('password') && getFieldError('password')
+                      ? 'border-red-500 focus:ring-red-500'
+                      : 'border-slate-gray/30 focus:ring-slate-gray'
+                  }`}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-gray/60 hover:text-slate-gray"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+              {isFieldTouched('password') && getFieldError('password') && (
+                <motion.p
+                  className="text-red-500 text-sm mt-1 flex items-center gap-1"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                >
+                  <AlertCircle size={14} /> {getFieldError('password')}
+                </motion.p>
+              )}
             </div>
 
             {/* Confirm Password Field (Register Only) */}
@@ -149,49 +233,50 @@ export default function LoginPage() {
                 <label className="block text-sm font-medium text-slate-gray mb-2">
                   Confirm Password
                 </label>
-                <input
-                  type="password"
-                  name="passwordConfirm"
-                  value={formData.passwordConfirm}
-                  onChange={handleChange}
-                  placeholder="Repeat your password"
-                  required={!isLogin}
-                  className="w-full px-4 py-2 border border-slate-gray/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-gray"
-                />
-              </div>
-            )}
-
-            {/* Error Message */}
-            {error && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                <p className="text-red-700 text-sm flex items-center gap-2">
-                  <span>⚠️</span> {error}
-                </p>
-              </div>
-            )}
-
-            {/* Success Message */}
-            {success && (
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                <p className="text-green-700 text-sm flex items-center gap-2">
-                  <Check size={18} strokeWidth={2} />
-                  {success}
-                </p>
+                <div className="relative">
+                  <input
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    name="passwordConfirm"
+                    value={formData.passwordConfirm}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    placeholder="Repeat your password"
+                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition pr-10 ${
+                      isFieldTouched('passwordConfirm') && getFieldError('passwordConfirm')
+                        ? 'border-red-500 focus:ring-red-500'
+                        : 'border-slate-gray/30 focus:ring-slate-gray'
+                    }`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-gray/60 hover:text-slate-gray"
+                  >
+                    {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+                {isFieldTouched('passwordConfirm') && getFieldError('passwordConfirm') && (
+                  <motion.p
+                    className="text-red-500 text-sm mt-1 flex items-center gap-1"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                  >
+                    <AlertCircle size={14} /> {getFieldError('passwordConfirm')}
+                  </motion.p>
+                )}
               </div>
             )}
 
             {/* Submit Button */}
-            <button
+            <motion.button
               type="submit"
               disabled={loading}
-              className="w-full bg-slate-gray text-warm-cream font-semibold py-2 rounded-lg hover:bg-soft-black transition disabled:bg-slate-gray/50"
+              className="w-full bg-slate-gray text-warm-cream font-semibold py-2 rounded-lg hover:bg-soft-black transition disabled:bg-slate-gray/50 mt-6"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
             >
-              {loading
-                ? 'Loading...'
-                : isLogin
-                  ? 'Login'
-                  : 'Create Account'}
-            </button>
+              {loading ? 'Loading...' : isLogin ? 'Login' : 'Create Account'}
+            </motion.button>
           </form>
 
           {/* Divider */}
@@ -208,23 +293,14 @@ export default function LoginPage() {
           <div className="mt-6 text-center">
             <p className="text-slate-gray/70 text-sm">
               {isLogin ? "Don't have an account?" : 'Already have an account?'}
-              <button
+              <motion.button
                 type="button"
-                onClick={() => {
-                  setIsLogin(!isLogin)
-                  setError('')
-                  setSuccess('')
-                  setFormData({
-                    name: '',
-                    email: '',
-                    password: '',
-                    passwordConfirm: '',
-                  })
-                }}
+                onClick={handleToggleMode}
                 className="ml-2 text-slate-gray font-semibold hover:text-soft-black transition"
+                whileHover={{ scale: 1.05 }}
               >
                 {isLogin ? 'Register' : 'Login'}
-              </button>
+              </motion.button>
             </p>
           </div>
 

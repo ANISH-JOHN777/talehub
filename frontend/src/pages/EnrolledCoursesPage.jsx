@@ -215,7 +215,7 @@ export default function EnrolledCoursesPage() {
                     <div className="p-6">
                       {/* Header */}
                       <div className="flex items-start justify-between mb-4">
-                        <div>
+                        <div className="flex-1">
                           <h3 className="text-2xl font-bold text-dark-blue mb-2">
                             {enrollment.program?.title || 'Program'}
                           </h3>
@@ -230,6 +230,24 @@ export default function EnrolledCoursesPage() {
                               ₹{enrollment.price}
                             </span>
                           </div>
+                          {/* Instructor Info */}
+                          {enrollment.instructor && (
+                            <div className="mt-3 flex items-center gap-2 p-2 bg-purple-50 rounded-lg">
+                              {enrollment.instructor.profileImage && (
+                                <img
+                                  src={enrollment.instructor.profileImage}
+                                  alt={enrollment.instructor.name}
+                                  className="w-6 h-6 rounded-full object-cover"
+                                />
+                              )}
+                              <div className="text-sm">
+                                <p className="text-xs text-slate-600">Instructor:</p>
+                                <p className="font-semibold text-dark-blue text-sm">
+                                  {enrollment.instructor.name}
+                                </p>
+                              </div>
+                            </div>
+                          )}
                         </div>
                         <motion.button
                           whileHover={{ scale: 1.1 }}

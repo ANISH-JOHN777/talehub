@@ -220,6 +220,30 @@ export default function Dashboard() {
                         {enrollment.tier} Plan
                       </div>
 
+                      {/* Instructor Card */}
+                      {enrollment.instructor && (
+                        <div className="bg-purple-50 border border-purple-200 rounded-lg p-3 mb-4">
+                          <div className="text-xs font-semibold text-purple-700 mb-2">👨‍🏫 Your Instructor</div>
+                          <div className="flex items-center gap-2">
+                            {enrollment.instructor.profileImage && (
+                              <img
+                                src={enrollment.instructor.profileImage}
+                                alt={enrollment.instructor.name}
+                                className="w-8 h-8 rounded-full object-cover"
+                              />
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <div className="font-semibold text-purple-900 text-sm truncate">
+                                {enrollment.instructor.name}
+                              </div>
+                              <div className="text-xs text-purple-600 truncate">
+                                {enrollment.instructor.expertise}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
                       {/* Upcoming Session */}
                       {upcomingSession && (
                         <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">

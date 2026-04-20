@@ -29,6 +29,9 @@ export default function EnrollmentCustomizationPage() {
   const [program, setProgram] = useState(null)
   const [loading, setLoading] = useState(true)
   const [activeStep, setActiveStep] = useState(1)
+  const [instructors, setInstructors] = useState([])
+  const [selectedInstructor, setSelectedInstructor] = useState(null)
+  const [instructorsLoading, setInstructorsLoading] = useState(false)
 
   // Customization states
   const [sessionType, setSessionType] = useState('human') // 'human' or 'ai'
@@ -48,6 +51,11 @@ export default function EnrollmentCustomizationPage() {
       description: 'Live expert-led sessions with Q&A',
       color: 'from-slate-gray to-dark-blue',
     },
+    oneOnOne: {
+      perSession: 150,
+      description: 'Private one-on-one sessions with instructor',
+      color: 'from-accent-gold to-yellow-500',
+    },
     ai: {
       perSession: 25,
       description: 'AI-powered personalized learning',
@@ -61,7 +69,29 @@ export default function EnrollmentCustomizationPage() {
       return
     }
     fetchProgram()
+    fetchInstructors()
   }, [id, user, navigate])
+
+  // Scroll to top when step changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [activeStep])
+
+  const fetchInstructors = async () => {
+    try {
+      setInstructorsLoading(true)
+      const response = await axios.get(`${API_URL}/instructors`)
+      setInstructors(response.data.data || [])
+      // Auto-select first instructor if available
+      if (response.data.data && response.data.data.length > 0) {
+        setSelectedInstructor(response.data.data[0]._id)
+      }
+    } catch (error) {
+      console.error('Error fetching instructors:', error)
+    } finally {
+      setInstructorsLoading(false)
+    }
+  }
 
   const fetchProgram = async () => {
     try {
@@ -133,11 +163,22 @@ export default function EnrollmentCustomizationPage() {
       return
     }
 
+    if (!selectedInstructor) {
+      alert('Please select an instructor')
+      return
+    }
+
     // Prepare enrollment data
+    const tierMap = {
+      oneOnOne: 'VIP',
+      human: 'Premium',
+      ai: 'Pro',
+    }
     const enrollmentData = {
       programId: id,
       sessionType,
       sessionCount,
+      instructorId: selectedInstructor,
       customizedSessions: sessionDates.map((date, index) => ({
         date,
         time: sessionTimes[index],
@@ -145,7 +186,7 @@ export default function EnrollmentCustomizationPage() {
       })),
       phoneNumber,
       price: currentPrice,
-      tier: sessionType === 'human' ? 'Premium' : 'Pro',
+      tier: tierMap[sessionType],
     }
 
     // Store enrollment data for payment page
@@ -221,7 +262,7 @@ export default function EnrollmentCustomizationPage() {
           animate={{ opacity: 1 }}
           className="mb-12 flex justify-between items-center"
         >
-          {[1, 2, 3, 4, 5].map((step) => (
+          {[1, 2, 3, 4, 5, 6].map((step) => (
             <div key={step} className="flex items-center flex-1">
               <motion.div
                 whileHover={{ scale: 1.05 }}
@@ -234,7 +275,7 @@ export default function EnrollmentCustomizationPage() {
               >
                 {step}
               </motion.div>
-              {step < 5 && (
+              {step < 6 && (
                 <div
                   className={`flex-1 h-1 mx-2 transition-all ${
                     activeStep > step
@@ -266,7 +307,7 @@ export default function EnrollmentCustomizationPage() {
                       Step 1: Choose Session Type
                     </h2>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       {/* Human Session */}
                       <motion.div
                         whileHover={{ scale: 1.02 }}
@@ -305,6 +346,48 @@ export default function EnrollmentCustomizationPage() {
                           <div className="flex items-center">
                             <Check size={16} className="mr-2 text-green-500" />
                             Personalized feedback
+                          </div>
+                        </div>
+                      </motion.div>
+
+                      {/* 1 on 1 Session */}
+                      <motion.div
+                        whileHover={{ scale: 1.02 }}
+                        onClick={() => handleSessionTypeChange('oneOnOne')}
+                        className={`p-8 rounded-xl cursor-pointer transition-all border-2 ${
+                          sessionType === 'oneOnOne'
+                            ? 'border-accent-gold bg-yellow-50'
+                            : 'border-slate-200 hover:border-slate-300'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between mb-4">
+                          <Phone size={32} className="text-accent-gold" />
+                          {sessionType === 'oneOnOne' && (
+                            <Check size={24} className="text-accent-gold" />
+                          )}
+                        </div>
+                        <h3 className="text-xl font-bold text-dark-blue mb-2">
+                          1 on 1 Session
+                        </h3>
+                        <p className="text-slate-gray mb-4 text-sm">
+                          {pricingByType.oneOnOne.description}
+                        </p>
+                        <p className="text-2xl font-bold text-accent-gold">
+                          ₹{pricingByType.oneOnOne.perSession}
+                          <span className="text-sm text-slate-gray">/session</span>
+                        </p>
+                        <div className="mt-4 space-y-2 text-sm text-slate-600">
+                          <div className="flex items-center">
+                            <Check size={16} className="mr-2 text-accent-gold" />
+                            Exclusive 1-on-1 time with instructor
+                          </div>
+                          <div className="flex items-center">
+                            <Check size={16} className="mr-2 text-accent-gold" />
+                            Customized learning plan
+                          </div>
+                          <div className="flex items-center">
+                            <Check size={16} className="mr-2 text-accent-gold" />
+                            Priority support
                           </div>
                         </div>
                       </motion.div>
@@ -457,13 +540,13 @@ export default function EnrollmentCustomizationPage() {
                       onClick={() => setActiveStep(3)}
                       className="flex-1 bg-slate-gray text-warm-cream py-4 rounded-xl font-bold hover:bg-opacity-90 transition-all"
                     >
-                      Next: Video Library <ChevronRight className="inline ml-2" size={20} />
+                      Next: Select Instructor <ChevronRight className="inline ml-2" size={20} />
                     </motion.button>
                   </div>
                 </motion.div>
               )}
 
-              {/* Step 3: Recorded Videos */}
+              {/* Step 3: Select Instructor */}
               {activeStep === 3 && (
                 <motion.div
                   key="step3"
@@ -474,7 +557,125 @@ export default function EnrollmentCustomizationPage() {
                 >
                   <div className="bg-white rounded-2xl p-8 shadow-lg">
                     <h2 className="text-2xl font-bold text-dark-blue mb-6">
-                      Step 3: Book Explanation Videos
+                      Step 3: Choose Your Instructor
+                    </h2>
+                    <p className="text-slate-600 mb-6">
+                      Select an instructor you'd like to work with. Your instructor will guide you throughout your learning journey.
+                    </p>
+
+                    {instructorsLoading ? (
+                      <div className="text-center py-8">
+                        <div className="inline-block animate-spin text-4xl mb-4">⏳</div>
+                        <p className="text-slate-gray">Loading instructors...</p>
+                      </div>
+                    ) : instructors.length === 0 ? (
+                      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-yellow-700">
+                        No instructors available
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {instructors.map((instructor) => (
+                          <motion.div
+                            key={instructor._id}
+                            whileHover={!instructor.isFullyBooked ? { scale: 1.02 } : {}}
+                            onClick={() => {
+                              if (instructor.isFullyBooked) {
+                                alert('This instructor is fully booked')
+                                return
+                              }
+                              setSelectedInstructor(instructor._id)
+                            }}
+                            className={`p-6 rounded-xl transition-all border-2 ${
+                              instructor.isFullyBooked ? 'cursor-not-allowed' : 'cursor-pointer'
+                            } ${
+                              selectedInstructor === instructor._id
+                                ? 'border-slate-gray bg-slate-50'
+                                : 'border-slate-200 hover:border-slate-300'
+                            } ${instructor.isFullyBooked ? 'opacity-60' : ''}`}
+                          >
+                            <div className="flex items-start justify-between mb-3">
+                              <div className="flex-1">
+                                <h3 className="text-lg font-bold text-dark-blue mb-1">
+                                  {instructor.name}
+                                </h3>
+                                <p className="text-sm text-slate-gray font-semibold mb-2">
+                                  {instructor.expertise}
+                                </p>
+                              </div>
+                              {selectedInstructor === instructor._id && (
+                                <Check size={24} className="text-slate-gray flex-shrink-0" />
+                              )}
+                            </div>
+                            <p className="text-sm text-slate-600 mb-3 line-clamp-2">
+                              {instructor.bio || 'Expert instructor'}
+                            </p>
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-1 text-xs text-slate-600">
+                                <Users size={14} />
+                                <span>{instructor.totalStudents || 0} students</span>
+                              </div>
+                              {/* Availability Badge */}
+                              <div className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                                instructor.isFullyBooked
+                                  ? 'bg-red-100 text-red-700'
+                                  : instructor.availableSlots <= 2
+                                  ? 'bg-orange-100 text-orange-700'
+                                  : 'bg-green-100 text-green-700'
+                              }`}>
+                                {instructor.isFullyBooked ? '❌ Fully Booked' : `✓ ${instructor.availableSlots} slots`}
+                              </div>
+                            </div>
+                          </motion.div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex gap-4">
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => setActiveStep(2)}
+                      className="flex-1 bg-slate-200 text-dark-blue py-4 rounded-xl font-bold hover:bg-slate-300 transition-colors"
+                    >
+                      Back
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => {
+                        if (!selectedInstructor) {
+                          alert('Please select an instructor')
+                          return
+                        }
+                        const selectedInstructorData = instructors.find(i => i._id === selectedInstructor)
+                        if (selectedInstructorData?.isFullyBooked) {
+                          alert('This instructor is fully booked. Please select another instructor.')
+                          return
+                        }
+                        setActiveStep(4)
+                      }}
+                      className="flex-1 bg-slate-gray text-warm-cream py-4 rounded-xl font-bold hover:bg-opacity-90 transition-all disabled:opacity-50"
+                      disabled={!selectedInstructor}
+                    >
+                      Next: Video Library <ChevronRight className="inline ml-2" size={20} />
+                    </motion.button>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Step 4: Recorded Videos (was Step 3) */}
+              {activeStep === 4 && (
+                <motion.div
+                  key="step3"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  className="space-y-6"
+                >
+                  <div className="bg-white rounded-2xl p-8 shadow-lg">
+                    <h2 className="text-2xl font-bold text-dark-blue mb-6">
+                      Step 4: Book Explanation Videos
                     </h2>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -547,7 +748,7 @@ export default function EnrollmentCustomizationPage() {
                     <motion.button
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      onClick={() => setActiveStep(2)}
+                      onClick={() => setActiveStep(3)}
                       className="flex-1 bg-slate-200 text-dark-blue py-4 rounded-xl font-bold hover:bg-slate-300 transition-colors"
                     >
                       Back
@@ -555,7 +756,7 @@ export default function EnrollmentCustomizationPage() {
                     <motion.button
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      onClick={() => setActiveStep(4)}
+                      onClick={() => setActiveStep(5)}
                       className="flex-1 bg-slate-gray text-warm-cream py-4 rounded-xl font-bold hover:bg-opacity-90 transition-all"
                     >
                       Next: Contact Info <ChevronRight className="inline ml-2" size={20} />
@@ -564,8 +765,8 @@ export default function EnrollmentCustomizationPage() {
                 </motion.div>
               )}
 
-              {/* Step 4: Contact Information */}
-              {activeStep === 4 && (
+              {/* Step 5: Contact Information */}
+              {activeStep === 5 && (
                 <motion.div
                   key="step4"
                   initial={{ opacity: 0, x: 20 }}
@@ -575,7 +776,7 @@ export default function EnrollmentCustomizationPage() {
                 >
                   <div className="bg-white rounded-2xl p-8 shadow-lg">
                     <h2 className="text-2xl font-bold text-dark-blue mb-6">
-                      Step 4: Contact Information
+                      Step 5: Contact Information
                     </h2>
 
                     <div className="space-y-6">
@@ -633,7 +834,7 @@ export default function EnrollmentCustomizationPage() {
                     <motion.button
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      onClick={() => setActiveStep(3)}
+                      onClick={() => setActiveStep(4)}
                       className="flex-1 bg-slate-200 text-dark-blue py-4 rounded-xl font-bold hover:bg-slate-300 transition-colors"
                     >
                       Back
@@ -641,7 +842,7 @@ export default function EnrollmentCustomizationPage() {
                     <motion.button
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      onClick={() => setActiveStep(5)}
+                      onClick={() => setActiveStep(6)}
                       className="flex-1 bg-slate-gray text-warm-cream py-4 rounded-xl font-bold hover:bg-opacity-90 transition-all"
                     >
                       Next: Review & Pay <ChevronRight className="inline ml-2" size={20} />
@@ -650,8 +851,8 @@ export default function EnrollmentCustomizationPage() {
                 </motion.div>
               )}
 
-              {/* Step 5: Review & Payment */}
-              {activeStep === 5 && (
+              {/* Step 6: Review & Payment */}
+              {activeStep === 6 && (
                 <motion.div
                   key="step5"
                   initial={{ opacity: 0, x: 20 }}
@@ -661,7 +862,7 @@ export default function EnrollmentCustomizationPage() {
                 >
                   <div className="bg-white rounded-2xl p-8 shadow-lg">
                     <h2 className="text-2xl font-bold text-dark-blue mb-6">
-                      Step 5: Review & Complete Payment
+                      Step 6: Review & Complete Payment
                     </h2>
 
                     <div className="space-y-6">
@@ -731,7 +932,7 @@ export default function EnrollmentCustomizationPage() {
                     <motion.button
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      onClick={() => setActiveStep(4)}
+                      onClick={() => setActiveStep(5)}
                       className="flex-1 bg-slate-200 text-dark-blue py-4 rounded-xl font-bold hover:bg-slate-300 transition-colors"
                     >
                       Back

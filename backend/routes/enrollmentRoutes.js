@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const enrollmentController = require('../controllers/enrollmentController')
-const { protect } = require('../middleware/auth')
+const { protect, authorize } = require('../middleware/auth')
 
 // User routes
 router.post('/', protect, enrollmentController.enrollProgram)
@@ -11,7 +11,11 @@ router.patch('/:enrollmentId/progress', protect, enrollmentController.updateProg
 router.patch('/:enrollmentId/complete', protect, enrollmentController.completeEnrollment)
 router.delete('/:enrollmentId', protect, enrollmentController.cancelEnrollment)
 
+// Certificate routes
+router.get('/:enrollmentId/certificate', protect, enrollmentController.downloadCertificate)
+router.post('/:enrollmentId/generate-certificate', protect, enrollmentController.generateCertificateEndpoint)
+
 // Admin routes
-router.get('/', protect, enrollmentController.getAllEnrollments)
+router.get('/', protect, authorize('admin'), enrollmentController.getAllEnrollments)
 
 module.exports = router

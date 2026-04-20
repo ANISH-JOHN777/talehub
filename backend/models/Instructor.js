@@ -48,6 +48,11 @@ const instructorSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    maxCapacity: {
+      type: Number,
+      default: 50,
+      description: 'Maximum number of students this instructor can take',
+    },
     rating: {
       average: { type: Number, default: 0, min: 0, max: 5 },
       count: { type: Number, default: 0 },
@@ -55,6 +60,11 @@ const instructorSchema = new mongoose.Schema(
     isActive: {
       type: Boolean,
       default: true,
+    },
+    isAvailable: {
+      type: Boolean,
+      default: true,
+      description: 'Whether instructor is available to take new students',
     },
     createdAt: {
       type: Date,

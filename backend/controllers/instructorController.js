@@ -4,12 +4,20 @@ const Instructor = require('../models/Instructor')
 // @desc    Get all instructors
 exports.getAllInstructors = async (req, res) => {
   try {
-    const instructors = await Instructor.find({ isActive: true }).populate('programs', 'title category')
+    const instructors = await Instructor.find({ isActive: true, isAvailable: true }).populate('programs', 'title category')
+
+    // Add availability slots calculation
+    const instructorsWithAvailability = instructors.map((instructor) => {
+      const instructorObj = instructor.toObject()
+      instructorObj.availableSlots = Math.max(0, (instructor.maxCapacity || 50) - (instructor.totalStudents || 0))
+      instructorObj.isFullyBooked = instructorObj.availableSlots === 0
+      return instructorObj
+    })
 
     res.status(200).json({
       success: true,
-      count: instructors.length,
-      data: instructors,
+      count: instructorsWithAvailability.length,
+      data: instructorsWithAvailability,
     })
   } catch (error) {
     res.status(500).json({ success: false, message: error.message })

@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Plus, Edit, Trash2, BookOpen, Users, TrendingUp, Settings, Star } from 'lucide-react'
+import { Plus, Edit, Trash2, BookOpen, Users, TrendingUp, Settings, Star, BarChart3 } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 
 const API_URL = 'http://localhost:5000/api'
 
 export default function AdminDashboard() {
+  const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('programs')
   const [programs, setPrograms] = useState([])
   const [instructors, setInstructors] = useState([])
@@ -88,12 +90,22 @@ export default function AdminDashboard() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
-          className="mb-8"
+          className="mb-8 flex justify-between items-start"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <h1 className="text-4xl font-bold text-warm-cream mb-2">Admin Dashboard</h1>
-          <p className="text-warm-cream/60">Manage programs, instructors, and platform settings</p>
+          <div>
+            <h1 className="text-4xl font-bold text-warm-cream mb-2">Admin Dashboard</h1>
+            <p className="text-warm-cream/60">Manage programs, instructors, and platform settings</p>
+          </div>
+          <motion.button
+            onClick={() => navigate('/admin/advanced-analytics')}
+            className="flex items-center gap-2 bg-slate-gray hover:bg-slate-gray/80 text-warm-cream px-6 py-3 rounded-lg font-semibold transition"
+            whileHover={{ scale: 1.05 }}
+          >
+            <BarChart3 size={20} />
+            Advanced Analytics
+          </motion.button>
         </motion.div>
 
         {/* Stats */}

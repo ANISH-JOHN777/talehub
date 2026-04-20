@@ -12,6 +12,11 @@ const enrollmentSchema = new mongoose.Schema(
       ref: 'Program',
       required: true,
     },
+    instructor: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Instructor',
+      required: true,
+    },
     tier: {
       type: String,
       enum: ['Basic', 'Pro', 'Premium'],

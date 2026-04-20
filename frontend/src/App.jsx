@@ -1,5 +1,6 @@
 import { Routes, Route, Link } from 'react-router-dom'
 import { BookOpen, LogOut } from 'lucide-react'
+import { Toaster } from 'react-hot-toast'
 import HomePage from './pages/HomePage'
 import ProgramsPage from './pages/ProgramsPage'
 import ProgramDetailPage from './pages/ProgramDetailPage'
@@ -8,14 +9,16 @@ import PaymentPage from './pages/PaymentPage'
 import DashboardNew from './pages/DashboardNew'
 import AboutPage from './pages/AboutPage'
 import PricingPage from './pages/PricingPage'
-import InstructorsPage from './pages/InstructorsPage'
 import SessionPage from './pages/SessionPage'
 import ContactPage from './pages/ContactPage'
 import AdminDashboard from './pages/AdminDashboard'
 import AdminAnalytics from './pages/AdminAnalytics'
+import AdminAnalyticsEnhanced from './pages/AdminAnalyticsEnhanced'
 import ProtectedRoute from './components/ProtectedRoute'
 import ScrollToTop from './components/ScrollToTop'
 import PageScrollReset from './components/PageScrollReset'
+import MobileNavigationMenu from './components/MobileNavigationMenu'
+import MobileBottomNav from './components/MobileBottomNav'
 import { useAuth } from './context/AuthContext'
 import './App.css'
 
@@ -32,6 +35,8 @@ function App() {
 
   return (
     <div className="min-h-screen bg-warm-cream">
+      <Toaster position="top-right" />
+      
       {/* Navigation Bar */}
       <nav className="fixed w-full top-0 z-50 bg-warm-cream/95 border-b border-slate-gray/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -55,11 +60,6 @@ function App() {
               <li>
                 <Link to="/programs" className="text-soft-black hover:text-slate-gray font-medium transition">
                   Programs
-                </Link>
-              </li>
-              <li>
-                <Link to="/instructors" className="text-soft-black hover:text-slate-gray font-medium transition">
-                  Instructors
                 </Link>
               </li>
               <li>
@@ -117,7 +117,7 @@ function App() {
       </nav>
 
       {/* Routes */}
-      <main>
+      <main className="pb-20 lg:pb-0">
         <PageScrollReset />
         <Routes>
           {/* Public Routes */}
@@ -126,7 +126,6 @@ function App() {
           <Route path="/programs" element={<ProgramsPage />} />
           <Route path="/programs/:id" element={<ProgramDetailPage />} />
           <Route path="/pricing" element={<PricingPage />} />
-          <Route path="/instructors" element={<InstructorsPage />} />
           <Route path="/session/:sessionId" element={<SessionPage />} />
           <Route path="/contact" element={<ContactPage />} />
 
@@ -138,8 +137,13 @@ function App() {
           <Route path="/dashboard" element={<ProtectedRoute><DashboardNew /></ProtectedRoute>} />
           <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
           <Route path="/admin/analytics" element={<ProtectedRoute><AdminAnalytics /></ProtectedRoute>} />
+          <Route path="/admin/advanced-analytics" element={<ProtectedRoute><AdminAnalyticsEnhanced /></ProtectedRoute>} />
         </Routes>
       </main>
+
+      {/* Mobile Navigation Components */}
+      <MobileNavigationMenu />
+      <MobileBottomNav />
 
       {/* Scroll to Top Button - Appears on all pages */}
       <ScrollToTop />

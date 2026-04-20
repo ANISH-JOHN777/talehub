@@ -15,7 +15,13 @@ router.get('/', protect, bookingController.getUserBookings)
 // Get booking by ID
 router.get('/:id', protect, bookingController.getBookingById)
 
-// Process payment
+// Create Razorpay payment order
+router.post('/payment/create-order', protect, bookingController.createPaymentOrder)
+
+// Verify Razorpay payment
+router.post('/payment/verify', protect, bookingController.verifyPayment)
+
+// Process payment (legacy endpoint)
 router.post('/:bookingId/payment', protect, bookingController.processPayment)
 
 // Cancel booking
